@@ -15,6 +15,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const location = useLocation()
+  const isHomePage = location.pathname === '/'
 
   useEffect(() => {
     const handleScroll = () => {
@@ -46,7 +47,9 @@ const Navbar = () => {
               />
             </div>
             <span className={`text-2xl font-bold ${
-              isScrolled ? 'text-gray-900' : 'text-white'
+              isHomePage
+                ? `transition-colors ${isScrolled ? 'text-gray-900' : 'text-white'}`
+                : 'text-blue-600'
             }`}>
               Casas Malibu
             </span>
@@ -54,15 +57,19 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-8">
-            <NavLink to="/" current={location.pathname} isScrolled={isScrolled}>Home</NavLink>
-            <NavLink to="/properties" current={location.pathname} isScrolled={isScrolled}>Properties</NavLink>
-            <NavLink to="/amenities" current={location.pathname} isScrolled={isScrolled}>Amenities</NavLink>
-            <NavLink to="/contact" current={location.pathname} isScrolled={isScrolled}>Contact</NavLink>
+            <NavLink to="/" current={location.pathname} isScrolled={isScrolled} isHomePage={isHomePage}>Home</NavLink>
+            <NavLink to="/properties" current={location.pathname} isScrolled={isScrolled} isHomePage={isHomePage}>Properties</NavLink>
+            <NavLink to="/amenities" current={location.pathname} isScrolled={isScrolled} isHomePage={isHomePage}>Amenities</NavLink>
+            <NavLink to="/contact" current={location.pathname} isScrolled={isScrolled} isHomePage={isHomePage}>Contact</NavLink>
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            className={`md:hidden ${isScrolled ? 'text-gray-900' : 'text-white'}`}
+            className={`md:hidden ${
+              isHomePage
+                ? `transition-colors ${isScrolled ? 'text-gray-900' : 'text-white'}`
+                : 'text-blue-600'
+            }`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,13 +94,21 @@ const Navbar = () => {
   )
 }
 
-const NavLink = ({ to, children, current, isScrolled }) => (
+const NavLink = ({ to, children, current, isScrolled, isHomePage }) => (
   <Link
     to={to}
-    className={`transition-colors ${
+    className={`${
       current === to
-        ? `font-semibold ${isScrolled ? 'text-blue-600' : 'text-white'}`
-        : `${isScrolled ? 'text-gray-600 hover:text-blue-600' : 'text-white/90 hover:text-white'}`
+        ? 'font-semibold '
+        : ''
+    }${
+      isHomePage
+        ? `transition-colors ${
+            isScrolled 
+              ? 'text-gray-600 hover:text-blue-600' 
+              : 'text-white/90 hover:text-white'
+          }`
+        : 'text-blue-600 hover:text-blue-800'
     }`}
   >
     {children}
@@ -113,9 +128,18 @@ const MobileNavLink = ({ to, children, current }) => (
   </Link>
 )
 
-Navbar.propTypes = {
-  isMenuOpen: PropTypes.bool.isRequired,
-  setIsMenuOpen: PropTypes.func.isRequired,
+NavLink.propTypes = {
+  to: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+  current: PropTypes.string.isRequired,
+  isScrolled: PropTypes.bool.isRequired,
+  isHomePage: PropTypes.bool.isRequired,
+}
+
+MobileNavLink.propTypes = {
+  to: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+  current: PropTypes.string.isRequired,
 }
 
 export default Navbar
